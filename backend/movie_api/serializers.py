@@ -1,9 +1,14 @@
 from rest_framework import serializers
 
-from .models import Movie, Role
+from .models import Movie, Role, Staff
 
+class StaffSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Staff
+        fields = '__all__'
 
 class RoleSerializer(serializers.ModelSerializer):
+    staffs = StaffSerializer(many=True, read_only=True)
 
     class Meta:
         model = Role
@@ -16,3 +21,4 @@ class MovieSerializer(serializers.ModelSerializer):
     class Meta:
         model = Movie
         fields = ('id', 'name', 'year', 'content', 'roles',)
+
