@@ -60,3 +60,14 @@ class UserRegistSerializer(serializers.ModelSerializer):
         user = User.objects.create_user(**validated_data)
         user.set_password(validated_data['password'])
         return user
+
+
+class UserLoginSerializer(serializers.Serializer):
+    username = serializers.CharField(write_only=True)
+    password = serializers.CharField(write_only=True, style={'input_type': 'password'})
+
+    def validate(self, data):
+        data_keys = data.keys()
+        if 'username' not in data_keys or 'password' not in data_keys:
+            raise serializers.ValidationError('username と password は必須項目です')
+        return data
