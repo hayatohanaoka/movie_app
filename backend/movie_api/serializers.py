@@ -1,4 +1,5 @@
 from rest_framework import serializers
+from django.contrib.auth.models import User
 
 from .models import Movie, Role, Staff
 
@@ -48,3 +49,14 @@ class StaffDetailSerializer(serializers.ModelSerializer):
     class Meta:
         model = Staff
         fields = ('name', 'birthday', 'roles')
+
+
+class UserRegistSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ('id', 'username', 'email', 'password')
+
+    def create(self, validated_data):
+        user = User.objects.create_user(**validated_data)
+        user.set_password(validated_data['password'])
+        return user
