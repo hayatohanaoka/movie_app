@@ -1,9 +1,10 @@
-from rest_framework import generics, permissions, status
+from rest_framework import generics, permissions, status, serializers
 from rest_framework.response import Response
 from django.contrib import auth
 
-from .models import Movie, Staff, Role
+from .models import Comment, Movie, Staff, Role
 from .serializers import (
+    CommentSerializer,
     MovieSerializer,
     RoleDetailSerializer,
     StaffDetailSerializer,
@@ -65,9 +66,35 @@ class RoleRetrieveView(generics.RetrieveAPIView):
     lookup_field = 'id'
 
 
+class CommentListCreateView(generics.ListCreateAPIView):
+
+    serializer_class = CommentSerializer
+
+    def get_queryset(self):
+        movie_id = self.kwargs['id']
+        return Comment.objects.filter(movie_id=movie_id)
+    
+    def perform_create(self, serializer):
+        user = self.request.user
+        movie_id = self.kwargs['id']
+        serializer.check_comment_exists(user, movie_id)
+        serializer.save(
+            user=user, movie_id=movie_id # 外部キーをセットする
+        )
+
+
+class CommentRetrieveAPIView(generics.RetrieveUpdateDestroyAPIView):
+    serializer_class = CommentSerializer
+    queryset = Comment.objects.all()
+    lookup_field = 'id'  # フィルターの条件
+    lookup_url_kwarg = 'cmt_id' # URLのパラメータ名
+
+
 movie_list_create = MovieListCreate.as_view()
 movie_retrieve_view = MovieRetrieveView.as_view()
 staff_retrieve_view = StaffRetrieveView.as_view()
 role_retrieve_view = RoleRetrieveView.as_view()
 user_regist_view = UserRegistView.as_view()
 user_login_view = UserLoginView.as_view()
+comment_list_view = CommentListCreateView.as_view()
+comment_retrieve_view = CommentRetrieveAPIView.as_view()

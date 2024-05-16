@@ -1,7 +1,7 @@
 from rest_framework import serializers
 from django.contrib.auth.models import User
 
-from .models import Movie, Role, Staff
+from .models import Movie, Role, Staff, Comment
 
 class StaffSerializer(serializers.ModelSerializer):
     class Meta:
@@ -71,3 +71,21 @@ class UserLoginSerializer(serializers.Serializer):
         if 'username' not in data_keys or 'password' not in data_keys:
             raise serializers.ValidationError('username と password は必須項目です')
         return data
+
+
+class CommentSerializer(serializers.ModelSerializer):
+    movie = serializers.StringRelatedField(many=False, read_only=True)
+    user = serializers.StringRelatedField(many=False, read_only=True)
+
+    class Meta:
+        model = Comment
+        fields = ('id', 'star', 'comment', 'movie', 'user')
+    
+    def validate_star(self, val):
+        if val < 0 or val > 5:
+            raise serializers.ValidationError('0 ~ 5 で評価してください')
+        return val
+
+    def check_comment_exists(self, user, movie_id):
+        if Comment.objects.filter(user=user, movie_id=movie_id).exists():
+            raise serializers.ValidationError('既に評価・コメント済みです')

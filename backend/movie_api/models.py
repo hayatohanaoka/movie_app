@@ -1,3 +1,4 @@
+from django.contrib.auth.models import User
 from django.db import models
 
 # Create your models here.
@@ -36,3 +37,23 @@ class Staff(models.Model):
     
     def __str__(self):
         return f'{self.name} ({self.birthday})'
+
+
+class Comment(models.Model):
+    class Meta:
+        db_table = 'tbl_comments'
+
+    user = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE
+    )
+    movie = models.ForeignKey(
+        Movie,
+        on_delete=models.CASCADE,
+        related_name='comments'
+    )
+    star = models.IntegerField()
+    comment = models.TextField()
+
+    def __str__(self):
+        return f'movie: {self.movie} (Scored by{self.user}) Star: {self.star} comments: {self.comment}'
