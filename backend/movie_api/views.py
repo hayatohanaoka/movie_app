@@ -83,11 +83,14 @@ class CommentListCreateView(generics.ListCreateAPIView):
         )
 
 
-class CommentRetrieveAPIView(generics.RetrieveUpdateDestroyAPIView):
+class CommentRetrieveUpdateDestroyAPIView(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = CommentSerializer
-    queryset = Comment.objects.all()
-    lookup_field = 'id'  # フィルターの条件
-    lookup_url_kwarg = 'cmt_id' # URLのパラメータ名
+    lookup_url_kwarg = 'cmt_id'
+    lookup_field = 'id'  # Comment のフィルター条件にするカラム
+
+    def get_queryset(self):
+        movie_id = self.kwargs['id']
+        return Comment.objects.filter(movie_id=movie_id)
 
 
 movie_list_create = MovieListCreate.as_view()
@@ -97,4 +100,4 @@ role_retrieve_view = RoleRetrieveView.as_view()
 user_regist_view = UserRegistView.as_view()
 user_login_view = UserLoginView.as_view()
 comment_list_view = CommentListCreateView.as_view()
-comment_retrieve_view = CommentRetrieveAPIView.as_view()
+comment_retrieve_view = CommentRetrieveUpdateDestroyAPIView.as_view()
