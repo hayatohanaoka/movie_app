@@ -1,5 +1,6 @@
 from rest_framework import serializers
 from django.contrib.auth.models import User
+from django.db import models
 
 from .models import Movie, Role, Staff, Comment
 
@@ -19,10 +20,14 @@ class RoleSerializer(serializers.ModelSerializer):
 
 class MovieSerializer(serializers.ModelSerializer):
     roles = RoleSerializer(many=True, read_only=True)
+    average_star = serializers.SerializerMethodField()
 
     class Meta:
         model = Movie
-        fields = ('id', 'name', 'year', 'content', 'roles')
+        fields = ('id', 'name', 'year', 'content', 'roles', 'average_star')
+    
+    def get_average_star(self, obj):
+        return obj.comments.all().aggregate(models.Avg('star'))['star__avg']
 
 
 class RoleDetailSerializer(serializers.ModelSerializer):

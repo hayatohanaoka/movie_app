@@ -1,0 +1,7 @@
+id,last_login,is_superuser,username,last_name,email,is_staff,is_active,date_joined,first_name
+1,2023-06-02 02:35:11.281036,1,user,,yamada.taro@example.com,1,1,2023-05-26 04:15:25.814156,
+2,2023-06-02 02:35:11.281036,0,user2,,suzuki.hanako@example.com,0,1,2023-05-26 04:15:25.867752,
+3,2023-06-02 02:35:11.281036,0,田中賢治,,tanaka.kenji@example.jp,0,1,2023-05-26 04:15:25.921122,
+4,2023-06-02 02:35:11.281036,0,大西美子,,onishi.yoshiko@example.com,0,1,2023-05-26 04:15:25.974587,
+5,2023-06-02 02:35:11.281036,0,植村一郎,,uemura.ichiro@example.com,0,1,2023-05-26 04:15:26.027863,
+6,2023-06-02 02:35:11.281036,0,test,,test@mail.com,0,1,2023-05-26 04:15:26.081297,
