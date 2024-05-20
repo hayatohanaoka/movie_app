@@ -15,6 +15,18 @@ class Movie(models.Model):
         return f'{self.name} {self.year}'
 
 
+class MovieRating(models.Model):
+    """
+    評価の平均値を保存するためのテーブル
+    """
+    class Meta:
+        db_table = 'tbl_movie_averages'
+
+    movie = models.OneToOneField(
+        Movie, on_delete=models.CASCADE, related_name='rating')
+    average_star = models.FloatField(default=0)
+
+
 class Role(models.Model):
     class Meta:
         db_table = 'tbl_roles'
@@ -54,6 +66,18 @@ class Comment(models.Model):
     )
     star = models.IntegerField()
     comment = models.TextField()
+
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
+        
+        # 自身に紐づく Movie のコメントの評価平均を算出
+        relate_comments = Comment.objects.filter(movie=self.movie)
+        average_star = relate_comments.aggregate(models.Avg('star'))['star__avg']
+
+        MovieRating.objects.update_or_create(
+            movie=self.movie,
+            average_star=average_star
+        )
 
     def __str__(self):
         return f'movie: {self.movie} (Scored by{self.user}) Star: {self.star} comments: {self.comment}'

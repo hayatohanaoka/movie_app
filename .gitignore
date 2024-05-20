@@ -18,5 +18,3 @@ api_keys/**
 
 #ignore api key
 **src/*.json
-
-csvs**
