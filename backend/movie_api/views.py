@@ -1,6 +1,9 @@
 from rest_framework import generics, permissions, status, serializers
 from rest_framework.response import Response
+from rest_framework.pagination import LimitOffsetPagination
 from django.contrib import auth
+from rest_framework.filters import OrderingFilter
+from django_filters.rest_framework import DjangoFilterBackend
 
 from .models import Comment, Movie, Staff, Role
 from .serializers import (
@@ -14,6 +17,8 @@ from .serializers import (
 
 
 # Create your views here.
+
+
 class UserRegistView(generics.CreateAPIView):
     serializer_class = UserRegistSerializer
     permission_classes = (permissions.AllowAny,)
@@ -40,9 +45,17 @@ class UserLoginView(generics.GenericAPIView):
         return Response('リクエストが不正です', status=status.HTTP_400_BAD_REQUEST)
 
 
-class MovieListCreate(generics.ListCreateAPIView):
+class MovieListPagination(LimitOffsetPagination):
+    default_limit = 5
+    max_limit = 10
 
+
+class MovieListCreate(generics.ListCreateAPIView):
     serializer_class = MovieSerializer
+    pagination_class = MovieListPagination
+    filter_backends  = (DjangoFilterBackend, OrderingFilter)
+    filterset_fields = ('name', 'roles__staffs__name', 'year')
+    ordering_fields  = ('name', 'year')
 
     def get_queryset(self):
         return Movie.objects.filter(is_accepted=True)
